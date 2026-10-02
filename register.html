@@ -7,25 +7,30 @@
     <link rel="stylesheet" href="shared.css" />
     <script src="app.js" defer></script>
   </head>
+
   <body>
     <header>
       <h1>QueueSmart</h1>
-      <p>Student services, less waiting.</p>
     </header>
+
     <main>
       <h2>Registration</h2>
+
       <p id="feedback" role="status"></p>
+
       <form id="auth-form">
-        <label for="email">Email</label
-        ><input
+        <label for="email">Email</label>
+        <input
           id="email"
           name="email"
           type="email"
           required
           maxlength="254"
           autocomplete="email"
-        /><label for="password">Password</label
-        ><input
+        />
+
+        <label for="password">Password</label>
+        <input
           id="password"
           name="password"
           type="password"
@@ -34,17 +39,13 @@
           maxlength="128"
           autocomplete="new-password"
         />
+
         <p>Use at least 8 characters.</p>
+
         <button>Register</button>
       </form>
+
       <p>Already registered? <a href="index.html">Login</a></p>
-      <p>
-        This demo accepts any valid email and password format. Passwords are
-        never saved.
-      </p>
     </main>
-    <footer>
-      Assignment 2 prototype · Mock data · No backend authentication
-    </footer>
   </body>
 </html>
