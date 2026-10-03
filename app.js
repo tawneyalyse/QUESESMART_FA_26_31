@@ -24,10 +24,17 @@ try {
 } catch (_) {
   storageAvailable = false;
 }
+// Admin service edits share the existing demo session and storage key.
+if (Array.isArray(state.services)) services.splice(0, services.length, ...state.services);
 function feedback(message) {
   if (getElement("feedback")) getElement("feedback").textContent = message;
 }
 function save() {
+  if (state.queue) {
+    const service = services.find((s) => s.id === state.queue.id);
+    if (service) service.ahead = state.queue.position - 1;
+  }
+  state.services = services;
   try {
     sessionStorage.setItem("queuesmart-demo", JSON.stringify(state));
   } catch (_) {
@@ -55,14 +62,25 @@ function readableDate(date) {
 function render() {
   if (getElement("navigation")) {
     getElement("navigation").replaceChildren();
-    for (const [file, label] of [
+    const studentLinks = [
       ["user_dashboard.html", "Dashboard"],
       ["join_queue.html", "Join Queue"],
       ["queue_status.html", "Queue Status"],
       ["history.html", "History"],
       ["notifications.html", "Notifications"],
       ["index.html", "Logout"],
-    ]) {
+    ];
+    const adminLinks = [
+      ["admin_dashboard.html", "Admin Dashboard"],
+      ["service_management.html", "Service Management"],
+      ["queue_management.html", "Queue Management"],
+      ["admin_queue_status.html", "Admin Queue Status"],
+      ["user_dashboard.html", "Student View"],
+      ["index.html", "Logout"],
+    ];
+    if (!page.startsWith("admin_") && !["service_management.html", "queue_management.html"].includes(page))
+      studentLinks.splice(studentLinks.length - 1, 0, ["admin_dashboard.html", "Admin View"]);
+    for (const [file, label] of (page.startsWith("admin_") || ["service_management.html", "queue_management.html"].includes(page) ? adminLinks : studentLinks)) {
       const a = element("a", label);
       a.href = file;
       if (file === page) a.setAttribute("aria-current", "page");
@@ -147,7 +165,9 @@ function completeQueue(outcome) {
   notify(
     outcome === "Served"
       ? `You were served at ${currentQueue.name}. Your visit is now in History.`
-      : `You left the ${currentQueue.name} queue.`,
+      : outcome === "Removed by admin"
+        ? `An administrator removed you from the ${currentQueue.name} queue.`
+        : `You left the ${currentQueue.name} queue.`,
   );
   state.queue = null;
   save();
